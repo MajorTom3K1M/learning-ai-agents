@@ -2,6 +2,8 @@ import os
 import sys
 from dotenv import load_dotenv
 from google import genai
+from google.genai import types
+
 
 load_dotenv()
 api_key = os.environ.get("GEMINI_API_KEY")
@@ -13,11 +15,14 @@ def main():
         sys.exit(1)
     else:
         user_prompt = " ".join(sys.argv[1:])
+        messages = [
+            types.Content(role=types.Role.USER, parts=[types.Part(text=user_prompt)])
+        ]
         print("User prompt:", user_prompt)
     
         response = client.models.generate_content(
             model="gemini-2.0-flash-001",
-            contents=user_prompt,
+            contents=messages,
         )
         print("Prompt tokens:", response.usage_metadata.prompt_token_count)
         print("Response tokens:", response.usage_metadata.candidates_token_count)
